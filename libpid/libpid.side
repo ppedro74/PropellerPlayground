@@ -1,0 +1,11 @@
+libpid.cpp
+pid.h
+pid.cpp
+>compiler=C++
+>memtype=cmm main ram compact
+>optimize=-Os
+>-m32bit-doubles
+>-fno-exceptions
+>-fno-rtti
+>-create_library
+>BOARD::QUICKSTART

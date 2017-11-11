@@ -1,0 +1,11 @@
+libserialcommands.cpp
+serialcommands.cpp
+serialcommands.h
+strtok_r.h
+>compiler=C
+>memtype=cmm main ram compact
+>optimize=-Os
+>-m32bit-doubles
+>-fno-exceptions
+>-create_library
+>BOARD::QUICKSTART
