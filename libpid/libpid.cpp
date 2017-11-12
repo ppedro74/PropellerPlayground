@@ -57,7 +57,7 @@ int main()
     {
         // Check A/D 0 
         Input = adc_in(0);                        
-        myPID.Compute();
+        myPID.Compute(millis());
         
         //pin, channel (0-1), tHigh (0-1000)
         pwm_set (0, 1, Output);

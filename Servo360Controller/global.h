@@ -20,20 +20,24 @@
 
 #define BAUDRATE                      115200
 #define SERIAL_COMMANDS_BUFFER_SIZE   64
+
 #define HOST_TX_PIN                   22
 #define HOST_RX_PIN                   23
 #define USB_TX_PIN                    30
 #define USB_RX_PIN                    31
-
 #define SERVO0_CONTROL_PIN            8
 #define SERVO0_FEEDBACK_PIN           9
+#define LED0_PIN                      16
 
 #define WHO_AM_I                      "PARALLAX 360 SERVO CONTROLLER (PROPELLER)\r\n"
 #define MSG_INVALID_COMMAND           "INVALID COMMAND\r\n"
 #define ID                            "id"
-#define ANGLE                         "a"
-#define SPEED                         "s"
-#define PID                           "pid"
+#define SET_ANGLE                     "s_angle"
+#define SET_SPEED                     "s_speed"
+#define GET_PID                       "g_pid"
+#define SET_PID                       "s_pid"
+#define GET_SERVO_CONFIG              "g_srv_config"
+#define SET_SERVO_CONFIG              "s_srv_config"
 #define PID_MS                        10
 
 const int kDutyScale = 1000;

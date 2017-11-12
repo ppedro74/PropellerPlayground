@@ -95,11 +95,12 @@ void servo_feedback(void *par)
 
           ctx->pid_input = ctx->angle;
           
-          if (ctx->move == 1 && abs(ctx->pid_input - ctx->pid_setpoint)<2)
-          {
-              ctx->move == 0;
-              servo_speed(ctx->control_pin, 0);
-          }              
+          //if (ctx->move == 1 && abs(ctx->pid_input - ctx->pid_setpoint)<2)
+          //{
+          //ctx->move = 0;
+          //servo_speed(ctx->control_pin, 0);
+          //low(LED0_PIN + ctx->id);
+          //}              
           
 		//ctx->angle = theta;
 
@@ -127,7 +128,7 @@ void print_angles()
 	print("ANGLES seq=%d", seq_);
 	for (int i = 0; i < kNumberOfServos; i++)
 	{
-		print(" %d", servos_contexts_[i].angle);
+		print(" %d %d", (int)servos_contexts_[i].move, servos_contexts_[i].angle);
 	}
 	print("\n");
 }
@@ -138,7 +139,7 @@ void print_angles(fdserial *serial)
 	dprint(serial, "ANGLES %d", seq_);
 	for (int i = 0; i < kNumberOfServos; i++)
 	{
-		dprint(serial, " %d", servos_contexts_[i].angle);
+		dprint(serial, " %d %d", (int)servos_contexts_[i].move, servos_contexts_[i].angle);
 	}
 	dprint(serial, "\n");
 }
@@ -150,7 +151,7 @@ void check_servo_pid(ServoContext* ctx)
 		return;
 	}
 
-	if (ctx->pid.Compute() == false)
+	if (ctx->pid.Compute(millis()) == false)
 	{
 		return;
 	}
@@ -167,6 +168,12 @@ void check_servo_pid(ServoContext* ctx)
 	}
 
 	servo_speed(ctx->control_pin, ctx->pid_output + offset);
+
+     if (ctx->move == 1 && abs(ctx->pid_input - ctx->pid_setpoint)<2)
+     {
+          ctx->move = 0;
+          low(LED0_PIN + ctx->id);
+     }              
 }
 
 int main()
@@ -197,6 +204,7 @@ int main()
 		ctx->pid.SetOutputLimits(-200, 200);
 
 		servo_speed(ctx->control_pin, 0);
+          low(LED0_PIN + i);
 	}
 
 	//cog3, cog4, cog5, cog6
@@ -230,8 +238,32 @@ int main()
 
 	print("INFO Ready!\n");
 
-	const int dt = ms;
-	int t = CNT;
+	const int dt_1ms = ms;
+	int t1 = CNT;
+
+/*
+     //testing seconds, millis
+     
+ 	const int dt_1000ms = ms * 1000;
+     int t2 = CNT;
+     int seconds = 0;
+	while (1)
+	{
+		if (CNT - t1 > dt_1ms)
+		{
+			t1 += dt_1ms;
+			millis_++;
+		}
+  
+          if (CNT - t2 > dt_1000ms)
+          {
+              t2 += dt_1000ms;
+              seconds ++;
+              
+              print("PING %d %d %d\n", seconds, millis_, CNT);
+          }              
+     }         
+*/
 
 	int print_angle_next_millis = millis_;
 	int check_target_angle_next_millis = millis_;
@@ -240,9 +272,9 @@ int main()
 	{
 		host_serial_commands_.ReadSerial();
 
-		if (CNT - t > dt)
+		if (CNT - t1 > dt_1ms)
 		{
-			t += dt;
+			t1 += dt_1ms;
 			millis_++;
 		}
 
@@ -251,7 +283,7 @@ int main()
 			print_angle_next_millis += 1000;
 
 			print_angles(host_serial_);
-			print_angles();
+			//print_angles();
 
 			seq_++;
 		}

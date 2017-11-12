@@ -14,7 +14,7 @@
 //print
 //#include "simpletools.h"
 
-extern unsigned long millis();
+//extern unsigned long millis();
 
 #include <pid.h>
 
@@ -37,7 +37,8 @@ PID::PID(double* Input, double* Output, double* Setpoint, double Kp, double Ki, 
 	PID::SetControllerDirection(ControllerDirection);
 	PID::SetTunings(Kp, Ki, Kd, POn);
 
-	lastTime = millis() - SampleTime;
+	//lastTime = millis() - SampleTime;
+     lastTime = 0;
 }
 
 /*Constructor (...)*********************************************************
@@ -58,10 +59,11 @@ PID::PID(double* Input, double* Output, double* Setpoint, double Kp, double Ki, 
  *   pid Output needs to be computed.  returns true when the output is computed,
  *   false when nothing has been done.
  **********************************************************************************/
-bool PID::Compute()
+bool PID::Compute(unsigned long millis)
 {
 	if (!inAuto) return false;
-	unsigned long now = millis();
+	//unsigned long now = millis();	
+     unsigned long now = millis;
 	unsigned long timeChange = (now - lastTime);
 	if (timeChange >= SampleTime)
 	{
