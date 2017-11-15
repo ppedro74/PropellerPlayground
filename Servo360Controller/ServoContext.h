@@ -22,14 +22,19 @@ typedef struct ServoContext
     char deadband_positive_offset;
     char deadband_negative_offset;
 
-    char move;
+    char is_attached;
+    char prev_is_attached;
  
     double pid_input;
     double pid_output;
     double pid_setpoint;
+    
+    unsigned long millis;
+    unsigned long pid_counter;
+    
 
     PID pid;
-     
+    
     ServoContext() :
         id(0), 
         control_pin(0), 
@@ -44,13 +49,27 @@ typedef struct ServoContext
         angle(0), 
         deadband_positive_offset(0), 
         deadband_negative_offset(0),
-        move(0), 
+        is_attached(0),
+        prev_is_attached(0), 
         pid_input(0),
         pid_setpoint(0),
         pid_output(0),
+        millis(0),
+        pid_counter(0),
         pid(&pid_input, &pid_output, &pid_setpoint, 0.0, 0.0, 0.0, P_ON_E, DIRECT)
      {
      }            
+
+    inline void SetSetPoint(int angle)
+    {
+        pid_setpoint = angle;
+        is_attached = 1;
+    }
+    
+    inline void Release()
+    {
+        is_attached = 0;
+    }                
 
 } ServoContext;
 

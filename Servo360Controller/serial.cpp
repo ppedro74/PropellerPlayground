@@ -12,6 +12,64 @@ void cmd_id(SerialCommands* sender)
 
 SerialCommand cmd_id_(ID, cmd_id);
 
+void cmd_reset_turns(SerialCommands* sender)
+{
+     int tran_id;
+	int id;
+	
+     char* arg = sender->Next();
+	if (arg == NULL)
+	{
+		return;
+	}
+ 	tran_id = atoi(arg);
+  
+     for (int i = 0; i < kNumberOfServos; i++)
+     {
+        servos_contexts_[i].turns=0;
+        int new_setpoint = servos_contexts_[i].pid_setpoint;
+        new_setpoint = new_setpoint % 360;
+        servos_contexts_[i].pid_setpoint= new_setpoint;
+     }
+
+	dprint(sender->GetSerial(), "ACK %d\r\n", tran_id);
+}
+
+SerialCommand cmd_reset_turns_(RESET_TURNS, cmd_reset_turns);
+
+
+
+void cmd_release(SerialCommands* sender)
+{
+     int tran_id;
+	int id;
+	
+     char* arg = sender->Next();
+	if (arg == NULL)
+	{
+		return;
+	}
+ 	tran_id = atoi(arg);
+  
+     arg = sender->Next();
+     if (arg == NULL)
+	{
+		return;
+	}
+	id = atoi(arg);
+	if (id < 0 || id >= kNumberOfServos)
+	{
+		return;
+	}
+	
+	ServoContext* ctx = &servos_contexts_[id];
+     ctx->Release();
+
+	dprint(sender->GetSerial(), "ACK %d\r\n", tran_id);
+}
+
+SerialCommand cmd_release_(RELEASE, cmd_release);
+
 void cmd_set_angle(SerialCommands* sender)
 {
      int tran_id;
@@ -44,9 +102,7 @@ void cmd_set_angle(SerialCommands* sender)
 	angle = atoi(arg);
  
 	ServoContext* ctx = &servos_contexts_[id];
-	ctx->pid_setpoint = angle;
-	ctx->move = 1;
-     high(LED0_PIN + ctx->id); 
+     ctx->SetSetPoint(angle);
 
 	dprint(sender->GetSerial(), "ACK %d\r\n", tran_id);
 }
@@ -240,11 +296,13 @@ void serial_setup()
 	host_serial_commands_.AttachSerial(host_serial_);
 	host_serial_commands_.SetDefaultHandler(cmd_unrecognized);
 	host_serial_commands_.AddCommand(&cmd_id_);
+ 	host_serial_commands_.AddCommand(&cmd_release_);
 	host_serial_commands_.AddCommand(&cmd_set_angle_);
  	host_serial_commands_.AddCommand(&cmd_set_speed_);
    	host_serial_commands_.AddCommand(&cmd_get_pid_);
    	host_serial_commands_.AddCommand(&cmd_set_pid_);
 	host_serial_commands_.AddCommand(&cmd_get_servo_config_);   
 	host_serial_commands_.AddCommand(&cmd_set_servo_config_);   
+	host_serial_commands_.AddCommand(&cmd_reset_turns_);   
 }    
 

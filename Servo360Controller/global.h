@@ -38,7 +38,9 @@
 #define SET_PID                       "s_pid"
 #define GET_SERVO_CONFIG              "g_srv_config"
 #define SET_SERVO_CONFIG              "s_srv_config"
-#define PID_MS                        10
+#define RELEASE                       "release"
+#define RESET_TURNS                   "r_turns"
+#define PID_MS                        20
 
 const int kDutyScale = 1000;
 
@@ -63,7 +65,6 @@ extern double pid_kd_;
 extern double pid_ki_;
 
 
-unsigned long millis();
 void serial_setup();
 bool check_servo_calibration(ServoContext* ctx);
 void calibration_save();
